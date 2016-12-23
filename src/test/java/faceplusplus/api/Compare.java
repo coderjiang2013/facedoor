@@ -6,7 +6,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 /**
  * Created by coderJiang on 2016/12/23.
  */
-public class DetectTest {
+public class Compare {
 
     public void sendTest(){
 

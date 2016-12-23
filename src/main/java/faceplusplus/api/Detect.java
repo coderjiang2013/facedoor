@@ -12,6 +12,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,55 +26,62 @@ public class Detect {
         detect.send();
     }
 
-    private final String URL = "https://api-cn.faceplusplus.com/facepp/v3/detect";
+    private final String URL = "https://api-cn.faceplusplus.com/facepp/v3/compare";
     private HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
     private CloseableHttpClient closeableHttpClient = httpClientBuilder.build();
     private HttpPost httpPost = new HttpPost(this.URL);
 
     private List<NameValuePair> params = new ArrayList();
 
-    private final  String api_key = "";
-    private final  String api_secret = "";
-    private File image_file;
+    private final String api_key = "Ox8uEKtcmjfPLPzEnxFZ51-DzDCkvGjJ";
+    private final String api_secret = "KrPMts9wAwmOYPV7bOB3sWfNQpAy78PW";
 
-    private int return_landmark = 1;    //是否检测并返回人脸五官和轮廓的83个关键点。1:检测 0:不检测
-    private String return_attributes = "gender,age,smiling,glass,headpose,facequality,blur";
+    private String image_url1 = "http://tse1.mm.bing.net/th?&id=OIP.Mf62555cb9be25d4b1d9ca06340473d13o1&w=218&h=300&c=0&pid=1.9&rs=0&p=0&r=0";
+    //private String image_url2 = "http://tse1.mm.bing.net/th?&id=OIP.Meb7bef59054a04b5b2c43b95e1d782f9o1&w=250&h=300&c=0&pid=1.9&rs=0&p=0&r=0";
+    private String image_url2 = "https://www.starjf.com/static/ueditor/php/news/20161215/14817667054095.png";
 
-    public Detect(){
+
+
+    public Detect() {
     }
 
-    public void send() throws IOException {
+    public void send() {
 
-        initParams();
+        this.params.add(new BasicNameValuePair("api_key", this.api_key));
+        this.params.add(new BasicNameValuePair("api_secret", this.api_secret));
+        this.params.add(new BasicNameValuePair("image_url", "https://www.starjf.com/static/ueditor/php/upload/61771469585412.jpg"));
+
+        this.params.add(new BasicNameValuePair("image_url1", this.image_url1));
+        this.params.add(new BasicNameValuePair("image_url2", this.image_url2));
 
         UrlEncodedFormEntity entity;
         try {
             entity = new UrlEncodedFormEntity(this.params, "UTF-8");
             httpPost.setEntity(entity);
 
-            HttpResponse httpResponse;
+            HttpResponse httpResponse = null;
             //post请求
             httpResponse = closeableHttpClient.execute(httpPost);
 
-            //getEntity()
+
             HttpEntity httpEntity = httpResponse.getEntity();
             if (httpEntity != null) {
-                //打印响应内容
-                System.out.println("response:" + EntityUtils.toString(httpEntity, "UTF-8"));
+                String responseJson = EntityUtils.toString(httpEntity, "UTF-8");
+                System.out.println(responseJson);
             }
-            //释放资源
-            closeableHttpClient.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            //释放资源
+            try {
+                closeableHttpClient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
+
     }
 
-    private void initParams() {
-        this.params.add(new BasicNameValuePair("api_key", this.api_key));
-        this.params.add(new BasicNameValuePair("api_secret", this.api_secret));
-        this.params.add(new BasicNameValuePair("image_url", "https://www.starjf.com/static/ueditor/php/upload/61771469585412.jpg"));
-        this.params.add(new BasicNameValuePair("return_landmark", String.valueOf(this.return_landmark)));
-        this.params.add(new BasicNameValuePair("return_attributes", this.return_attributes));
-    }
 
 }
